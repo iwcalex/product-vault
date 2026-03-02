@@ -6,8 +6,13 @@ type ScreenContainerProps = {
   style?: ViewStyle;
 };
 
-export default function ScreenContainer({ children, style }: ScreenContainerProps) {
-  return <SafeAreaView style={[styles.container, style]}>{children}</SafeAreaView>;
+export default function ScreenContainer({
+  children,
+  style,
+}: ScreenContainerProps) {
+  return (
+    <SafeAreaView style={[styles.container, style]}>{children}</SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({

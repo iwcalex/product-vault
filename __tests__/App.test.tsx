@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react-native';
 import App from '../App';
 
+/* eslint-disable @typescript-eslint/no-require-imports -- require inside jest.mock factory must use require for Jest hoisting */
 jest.mock('react-native-safe-area-context', () => {
   const React = require('react');
   const { View } = require('react-native');
@@ -18,6 +19,7 @@ jest.mock('react-native-safe-area-context', () => {
       React.createElement(View, null, children),
   };
 });
+/* eslint-enable @typescript-eslint/no-require-imports */
 
 describe('App', () => {
   it('renders product list screen', () => {

@@ -1,4 +1,9 @@
-import type { DummyJsonProduct, DummyJsonCategory, Product, Category } from './productsTypes';
+import type {
+  DummyJsonProduct,
+  DummyJsonCategory,
+  Product,
+  Category,
+} from './productsTypes';
 
 export function mapDummyJsonProductToProduct(dto: DummyJsonProduct): Product {
   return {
@@ -14,7 +19,9 @@ export function mapDummyJsonProductToProduct(dto: DummyJsonProduct): Product {
   };
 }
 
-export function mapDummyJsonCategoryToCategory(dto: DummyJsonCategory): Category {
+export function mapDummyJsonCategoryToCategory(
+  dto: DummyJsonCategory
+): Category {
   return {
     slug: dto.slug,
     name: dto.name,

@@ -14,11 +14,11 @@ export default function ProductListScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>Product List</Text>
         <Pressable
-        style={styles.button}
-        onPress={() => navigation.navigate('ProductDetail', { productId: 1 })}
-        data-testid="product-list-go-to-detail"
-      >
-        <Text style={styles.buttonText}>View product 1</Text>
+          style={styles.button}
+          onPress={() => navigation.navigate('ProductDetail', { productId: 1 })}
+          data-testid="product-list-go-to-detail"
+        >
+          <Text style={styles.buttonText}>View product 1</Text>
         </Pressable>
       </View>
     </ScreenContainer>
