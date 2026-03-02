@@ -14,4 +14,11 @@ module.exports = defineConfig([
       'coverage/**',
     ],
   },
+  {
+    settings: {
+      react: {
+        version: '19.0',
+      },
+    },
+  },
 ]);
