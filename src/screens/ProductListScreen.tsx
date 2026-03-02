@@ -10,14 +10,11 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/navigationTypes';
-import {
-  ScreenContainer,
-  LoadingState,
-  ErrorState,
-} from '../components/ui';
+import { ScreenContainer, LoadingState, ErrorState } from '../components/ui';
 import { ProductCard } from '../components/product';
 import { useProducts } from '../hooks/useProducts';
 import { useCategories } from '../hooks/useCategories';
+import { useFavorites } from '../context/favorites';
 import type { Product } from '../api/products';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'ProductList'>;
@@ -38,6 +35,7 @@ export default function ProductListScreen() {
   } = useProducts(selectedCategory);
 
   const { data: categories = [] } = useCategories();
+  const { isFavorite } = useFavorites();
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -55,9 +53,10 @@ export default function ProductListScreen() {
       <ProductCard
         product={item}
         onPress={() => handleProductPress(item.id)}
+        isFavorite={isFavorite(item.id)}
       />
     ),
-    [handleProductPress]
+    [handleProductPress, isFavorite]
   );
 
   const keyExtractor = useCallback((item: Product) => String(item.id), []);
@@ -74,7 +73,9 @@ export default function ProductListScreen() {
     return (
       <ScreenContainer>
         <ErrorState
-          message={error instanceof Error ? error.message : 'Failed to load products'}
+          message={
+            error instanceof Error ? error.message : 'Failed to load products'
+          }
           onRetry={() => refetch()}
         />
       </ScreenContainer>
