@@ -21,4 +21,12 @@ module.exports = defineConfig([
       },
     },
   },
+  {
+    files: ['__mocks__/**/*.js'],
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+      },
+    },
+  },
 ]);

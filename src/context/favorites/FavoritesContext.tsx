@@ -8,20 +8,14 @@ import {
   useRef,
   type ReactNode,
 } from 'react';
-import {
-  favoritesReducer,
-  initialFavoritesState,
-} from './favoritesReducer';
+import { favoritesReducer, initialFavoritesState } from './favoritesReducer';
 import type { FavoritesContextValue } from './favoritesTypes';
 import { getFavorites, setFavorites } from './favoritesStorage';
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(
-    favoritesReducer,
-    initialFavoritesState
-  );
+  const [state, dispatch] = useReducer(favoritesReducer, initialFavoritesState);
   const isRehydrated = useRef(false);
 
   useEffect(() => {
