@@ -1,6 +1,21 @@
 import { render, screen } from '@testing-library/react-native';
 import App from '../App';
 
+jest.mock('../src/hooks/useProducts', () => ({
+  useProducts: () => ({
+    data: [],
+    isLoading: false,
+    isError: false,
+    error: null,
+    refetch: jest.fn(),
+    isFetching: false,
+  }),
+}));
+
+jest.mock('../src/hooks/useCategories', () => ({
+  useCategories: () => ({ data: [] }),
+}));
+
 /* eslint-disable @typescript-eslint/no-require-imports -- require inside jest.mock factory must use require for Jest hoisting */
 jest.mock('react-native-safe-area-context', () => {
   const React = require('react');
