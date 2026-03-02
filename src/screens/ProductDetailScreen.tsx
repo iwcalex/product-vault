@@ -10,6 +10,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/navigationTypes';
 import { ScreenContainer, LoadingState, ErrorState } from '../components/ui';
 import { useProduct } from '../hooks/useProduct';
+import { useFavorites } from '../context/favorites';
 import { formatPrice } from '../utils/formatters';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
@@ -17,6 +18,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
 export default function ProductDetailScreen({ route }: Props) {
   const { productId } = route.params;
   const { data, isLoading, isError, error, refetch } = useProduct(productId);
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   if (isLoading) {
     return (
@@ -75,9 +77,12 @@ export default function ProductDetailScreen({ route }: Props) {
         </ScrollView>
         <Pressable
           style={styles.favoriteButton}
+          onPress={() => toggleFavorite(data.id)}
           data-testid="product-detail-favorite-button"
         >
-          <Text style={styles.favoriteButtonText}>Favorite</Text>
+          <Text style={styles.favoriteButtonText}>
+            {isFavorite(data.id) ? 'Unfavorite' : 'Favorite'}
+          </Text>
         </Pressable>
       </ScrollView>
     </ScreenContainer>

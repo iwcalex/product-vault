@@ -17,6 +17,8 @@ export function favoritesReducer(
         : [...state.favoriteIds, id];
       return { favoriteIds };
     }
+    case 'SET':
+      return { favoriteIds: action.payload.favoriteIds };
     default:
       return state;
   }
