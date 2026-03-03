@@ -132,6 +132,7 @@ export default function ProductListScreen() {
     <ScreenContainer>
       <View style={styles.header}>
         <Text style={styles.title}>Product List</Text>
+        <Text style={styles.subtitle}>Browse by category</Text>
       </View>
       <FlatList
         data={filterOptions}
@@ -148,7 +149,7 @@ export default function ProductListScreen() {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={
-          products.length === 0 ? styles.emptyList : undefined
+          products.length === 0 ? styles.emptyList : styles.productListContent
         }
         ListEmptyComponent={
           <Text style={styles.emptyText}>No products in this category.</Text>
@@ -164,40 +165,53 @@ export default function ProductListScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    padding: 12,
+    paddingTop: 8,
+    paddingBottom: 10,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111',
+  },
+  subtitle: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
   },
   filterChipList: {
-    maxHeight: 48,
+    maxHeight: 40,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
   filterChipListContent: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 8,
   },
   filterChipSeparator: {
-    width: 8,
+    width: 10,
   },
   filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#eee',
-    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 20,
   },
   filterChipActive: {
-    backgroundColor: '#333',
+    backgroundColor: '#222',
   },
   filterChipText: {
-    fontSize: 14,
+    fontSize: 13,
+    color: '#444',
   },
   filterChipTextActive: {
     color: '#fff',
+  },
+  productListContent: {
+    paddingVertical: 8,
+    paddingBottom: 24,
   },
   emptyList: {
     flexGrow: 1,
