@@ -62,6 +62,14 @@ yarn lint --fix
 
 - **Navigation** (`src/navigation/`): Stack navigator with typed params; screens are ProductList and ProductDetail.
 
+## Architectural Decisions
+
+- **API layer separation** ensures screens are not tightly coupled to external services.
+- **React Query** is used for server state management (caching, background refetching, loading states).
+- **Context + reducer** is used for client-only state (favorites) to avoid mixing server and client state.
+- **AsyncStorage** persists favorites across app reloads.
+- **TypeScript strict typing** ensures API contracts are explicit and reduces runtime errors.
+
 ## Notes
 
 - Development and testing are Android-focused.
