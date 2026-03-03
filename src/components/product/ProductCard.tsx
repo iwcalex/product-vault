@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Image,
+  Platform,
+} from 'react-native';
 import type { Product } from '../../api/products';
 import { formatPrice } from '../../utils/formatters';
 
@@ -15,9 +22,10 @@ export default function ProductCard({
 }: ProductCardProps) {
   return (
     <Pressable
-      style={styles.card}
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={onPress}
-      data-testid={`product-card-${product.id}`}
+      android_ripple={{ color: 'rgba(0,0,0,0.06)' }}
+      testID={`product-card-${product.id}`}
     >
       <Image source={{ uri: product.thumbnail }} style={styles.thumbnail} />
       <View style={styles.info}>
@@ -26,14 +34,16 @@ export default function ProductCard({
         </Text>
         <Text style={styles.price}>{formatPrice(product.price)}</Text>
       </View>
-      {isFavorite && (
-        <View
-          style={styles.favoriteBadge}
-          testID="product-card-favorite-indicator"
-        >
+      <View
+        style={styles.favoriteArea}
+        testID="product-card-favorite-indicator"
+      >
+        {isFavorite ? (
           <Text style={styles.favoriteIcon}>♥</Text>
-        </View>
-      )}
+        ) : (
+          <View style={styles.favoritePlaceholder} />
+        )}
+      </View>
     </Pressable>
   );
 }
@@ -41,36 +51,59 @@ export default function ProductCard({
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    padding: 12,
+    alignItems: 'center',
+    padding: 14,
+    marginHorizontal: 12,
+    marginVertical: 6,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderRadius: 12,
+    ...Platform.select({
+      android: { elevation: 2 },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 3,
+      },
+    }),
+  },
+  cardPressed: {
+    opacity: 0.92,
   },
   thumbnail: {
-    width: 64,
-    height: 64,
-    borderRadius: 4,
+    width: 72,
+    height: 72,
+    borderRadius: 8,
     backgroundColor: '#f0f0f0',
   },
   info: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 14,
     justifyContent: 'center',
+    minWidth: 0,
   },
   title: {
     fontSize: 16,
     marginBottom: 4,
   },
   price: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111',
   },
-  favoriteBadge: {
-    justifyContent: 'center',
+  favoriteArea: {
+    width: 40,
+    height: 40,
     marginLeft: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   favoriteIcon: {
-    fontSize: 20,
+    fontSize: 22,
     color: '#c00',
+  },
+  favoritePlaceholder: {
+    width: 22,
+    height: 22,
   },
 });

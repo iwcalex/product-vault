@@ -51,6 +51,7 @@ export default function ProductDetailScreen({ route }: Props) {
     );
   }
 
+  const favorited = isFavorite(data.id);
   return (
     <ScreenContainer>
       <ScrollView
@@ -58,30 +59,42 @@ export default function ProductDetailScreen({ route }: Props) {
         contentContainerStyle={styles.scrollContent}
         testID="product-detail-scroll"
       >
+        <View style={styles.heroContainer}>
+          <Image
+            source={{ uri: data.images[0] }}
+            style={styles.heroImage}
+            resizeMode="cover"
+          />
+        </View>
+        {data.images.length > 1 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.thumbsScroll}
+            contentContainerStyle={styles.thumbsContent}
+          >
+            {data.images.map((uri, index) => (
+              <Image
+                key={`${uri}-${index}`}
+                source={{ uri }}
+                style={styles.thumbImage}
+              />
+            ))}
+          </ScrollView>
+        )}
         <Text style={styles.title}>{data.title}</Text>
         <Text style={styles.price}>{formatPrice(data.price)}</Text>
         <Text style={styles.description}>{data.description}</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.imagesScroll}
-          contentContainerStyle={styles.imagesContent}
-        >
-          {data.images.map((uri, index) => (
-            <Image
-              key={`${uri}-${index}`}
-              source={{ uri }}
-              style={styles.image}
-            />
-          ))}
-        </ScrollView>
         <Pressable
-          style={styles.favoriteButton}
+          style={[
+            styles.favoriteButton,
+            favorited && styles.favoriteButtonActive,
+          ]}
           onPress={() => toggleFavorite(data.id)}
-          data-testid="product-detail-favorite-button"
+          testID="product-detail-favorite-button"
         >
           <Text style={styles.favoriteButtonText}>
-            {isFavorite(data.id) ? 'Unfavorite' : 'Favorite'}
+            {favorited ? '♥ Unfavorite' : '♥ Favorite'}
           </Text>
         </Pressable>
       </ScrollView>
@@ -102,43 +115,65 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 8,
+  heroContainer: {
+    alignSelf: 'center',
+    width: '100%',
+    maxWidth: 400,
+    height: 300,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#f0f0f0',
+    marginBottom: 20,
   },
-  price: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 12,
+  heroImage: {
+    width: '100%',
+    height: '100%',
   },
-  description: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 16,
-  },
-  imagesScroll: {
+  thumbsScroll: {
     marginHorizontal: -16,
+    marginBottom: 20,
   },
-  imagesContent: {
+  thumbsContent: {
     paddingHorizontal: 16,
-    marginBottom: 24,
   },
-  image: {
-    width: 200,
-    height: 200,
+  thumbImage: {
+    width: 72,
+    height: 72,
     marginRight: 8,
     borderRadius: 8,
     backgroundColor: '#f0f0f0',
   },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111',
+    marginBottom: 8,
+  },
+  price: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111',
+    marginBottom: 16,
+  },
+  description: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#333',
+    marginBottom: 24,
+  },
   favoriteButton: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
     backgroundColor: '#333',
+  },
+  favoriteButtonActive: {
+    backgroundColor: '#555',
   },
   favoriteButtonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

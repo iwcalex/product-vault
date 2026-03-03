@@ -37,6 +37,11 @@ export default function ProductListScreen() {
   const { data: categories = [] } = useCategories();
   const { isFavorite } = useFavorites();
 
+  const filterOptions: { slug: string | undefined; name: string }[] = [
+    { slug: undefined, name: 'All' },
+    ...categories.map((c) => ({ slug: c.slug, name: c.name })),
+  ];
+
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -61,6 +66,47 @@ export default function ProductListScreen() {
 
   const keyExtractor = useCallback((item: Product) => String(item.id), []);
 
+  const renderFilterChip = useCallback(
+    ({ item }: { item: { slug: string | undefined; name: string } }) => {
+      const isAll = item.slug === undefined;
+      const isSelected = isAll
+        ? selectedCategory === undefined
+        : selectedCategory === item.slug;
+      return (
+        <Pressable
+          style={[styles.filterChip, isSelected && styles.filterChipActive]}
+          onPress={() => setSelectedCategory(item.slug)}
+          testID={
+            isAll
+              ? 'product-list-filter-all'
+              : `product-list-filter-${item.slug}`
+          }
+        >
+          <Text
+            style={[
+              styles.filterChipText,
+              isSelected && styles.filterChipTextActive,
+            ]}
+          >
+            {item.name}
+          </Text>
+        </Pressable>
+      );
+    },
+    [selectedCategory]
+  );
+
+  const filterChipKeyExtractor = useCallback(
+    (item: { slug: string | undefined; name: string }) =>
+      item.slug ?? '__all__',
+    []
+  );
+
+  const FilterChipSeparator = useCallback(
+    () => <View style={styles.filterChipSeparator} />,
+    []
+  );
+
   if (isLoading) {
     return (
       <ScreenContainer>
@@ -84,54 +130,30 @@ export default function ProductListScreen() {
 
   return (
     <ScreenContainer>
-      <View style={styles.header}>
-        <Text style={styles.title}>Product List</Text>
-      </View>
-      <View style={styles.filterRow}>
-        <Pressable
-          style={[
-            styles.filterChip,
-            selectedCategory === undefined && styles.filterChipActive,
-          ]}
-          onPress={() => setSelectedCategory(undefined)}
-          data-testid="product-list-filter-all"
-        >
-          <Text
-            style={[
-              styles.filterChipText,
-              selectedCategory === undefined && styles.filterChipTextActive,
-            ]}
-          >
-            All
-          </Text>
-        </Pressable>
-        {categories.map((cat) => (
-          <Pressable
-            key={cat.slug}
-            style={[
-              styles.filterChip,
-              selectedCategory === cat.slug && styles.filterChipActive,
-            ]}
-            onPress={() => setSelectedCategory(cat.slug)}
-            data-testid={`product-list-filter-${cat.slug}`}
-          >
-            <Text
-              style={[
-                styles.filterChipText,
-                selectedCategory === cat.slug && styles.filterChipTextActive,
-              ]}
-            >
-              {cat.name}
-            </Text>
-          </Pressable>
-        ))}
+      <View style={styles.headerChipsContainer}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Product List</Text>
+          <Text style={styles.subtitle}>Browse by category</Text>
+        </View>
+        <View style={styles.chipsWrapper}>
+          <FlatList
+            data={filterOptions}
+            renderItem={renderFilterChip}
+            keyExtractor={filterChipKeyExtractor}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterChipListContent}
+            ItemSeparatorComponent={FilterChipSeparator}
+            style={styles.filterChipList}
+          />
+        </View>
       </View>
       <FlatList
         data={products}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={
-          products.length === 0 ? styles.emptyList : undefined
+          products.length === 0 ? styles.emptyList : styles.productListContent
         }
         ListEmptyComponent={
           <Text style={styles.emptyText}>No products in this category.</Text>
@@ -146,37 +168,62 @@ export default function ProductListScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    padding: 12,
+  headerChipsContainer: {
+    backgroundColor: '#fff',
+    zIndex: 1,
+    elevation: 1,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+  },
+  header: {
+    paddingTop: 8,
+    paddingBottom: 6,
+    paddingHorizontal: 16,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111',
   },
-  filterRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 12,
-    gap: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  subtitle: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
+  },
+  chipsWrapper: {
+    minHeight: 48,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
+  filterChipList: {
+    flexGrow: 0,
+  },
+  filterChipListContent: {
+    paddingHorizontal: 4,
+  },
+  filterChipSeparator: {
+    width: 10,
   },
   filterChip: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    backgroundColor: '#eee',
-    borderRadius: 4,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 20,
   },
   filterChipActive: {
-    backgroundColor: '#333',
+    backgroundColor: '#222',
   },
   filterChipText: {
-    fontSize: 14,
+    fontSize: 13,
+    color: '#444',
   },
   filterChipTextActive: {
     color: '#fff',
+  },
+  productListContent: {
+    paddingTop: 4,
+    paddingBottom: 24,
   },
   emptyList: {
     flexGrow: 1,
