@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -19,6 +20,11 @@ export default function ProductDetailScreen({ route }: Props) {
   const { productId } = route.params;
   const { data, isLoading, isError, error, refetch } = useProduct(productId);
   const { toggleFavorite, isFavorite } = useFavorites();
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [data?.id]);
 
   if (isLoading) {
     return (
@@ -51,7 +57,10 @@ export default function ProductDetailScreen({ route }: Props) {
     );
   }
 
+  const images = data?.images ?? [];
+  const heroImage = images[selectedImageIndex] ?? images[0];
   const favorited = isFavorite(data.id);
+
   return (
     <ScreenContainer>
       <ScrollView
@@ -61,24 +70,30 @@ export default function ProductDetailScreen({ route }: Props) {
       >
         <View style={styles.heroContainer}>
           <Image
-            source={{ uri: data.images[0] }}
+            source={{ uri: heroImage }}
             style={styles.heroImage}
             resizeMode="cover"
           />
         </View>
-        {data.images.length > 1 && (
+        {images.length > 1 && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.thumbsScroll}
+            style={styles.thumbnailContainer}
             contentContainerStyle={styles.thumbsContent}
           >
-            {data.images.map((uri, index) => (
-              <Image
-                key={`${uri}-${index}`}
-                source={{ uri }}
-                style={styles.thumbImage}
-              />
+            {images.map((img, index) => (
+              <Pressable
+                key={img}
+                onPress={() => setSelectedImageIndex(index)}
+                style={[
+                  styles.thumbnailWrapper,
+                  index === selectedImageIndex && styles.thumbnailActive,
+                ]}
+                testID={`product-detail-thumbnail-${index}`}
+              >
+                <Image source={{ uri: img }} style={styles.thumbnailImage} />
+              </Pressable>
             ))}
           </ScrollView>
         )}
@@ -129,17 +144,25 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  thumbsScroll: {
+  thumbnailContainer: {
     marginHorizontal: -16,
     marginBottom: 20,
   },
   thumbsContent: {
     paddingHorizontal: 16,
   },
-  thumbImage: {
+  thumbnailWrapper: {
+    marginRight: 8,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  thumbnailActive: {
+    borderColor: '#333',
+  },
+  thumbnailImage: {
     width: 72,
     height: 72,
-    marginRight: 8,
     borderRadius: 8,
     backgroundColor: '#f0f0f0',
   },
