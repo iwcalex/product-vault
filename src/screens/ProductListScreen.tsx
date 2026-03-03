@@ -37,6 +37,11 @@ export default function ProductListScreen() {
   const { data: categories = [] } = useCategories();
   const { isFavorite } = useFavorites();
 
+  const filterOptions: { slug: string | undefined; name: string }[] = [
+    { slug: undefined, name: 'All' },
+    ...categories.map((c) => ({ slug: c.slug, name: c.name })),
+  ];
+
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -60,6 +65,47 @@ export default function ProductListScreen() {
   );
 
   const keyExtractor = useCallback((item: Product) => String(item.id), []);
+
+  const renderFilterChip = useCallback(
+    ({ item }: { item: { slug: string | undefined; name: string } }) => {
+      const isAll = item.slug === undefined;
+      const isSelected = isAll
+        ? selectedCategory === undefined
+        : selectedCategory === item.slug;
+      return (
+        <Pressable
+          style={[styles.filterChip, isSelected && styles.filterChipActive]}
+          onPress={() => setSelectedCategory(item.slug)}
+          testID={
+            isAll
+              ? 'product-list-filter-all'
+              : `product-list-filter-${item.slug}`
+          }
+        >
+          <Text
+            style={[
+              styles.filterChipText,
+              isSelected && styles.filterChipTextActive,
+            ]}
+          >
+            {item.name}
+          </Text>
+        </Pressable>
+      );
+    },
+    [selectedCategory]
+  );
+
+  const filterChipKeyExtractor = useCallback(
+    (item: { slug: string | undefined; name: string }) =>
+      item.slug ?? '__all__',
+    []
+  );
+
+  const FilterChipSeparator = useCallback(
+    () => <View style={styles.filterChipSeparator} />,
+    []
+  );
 
   if (isLoading) {
     return (
@@ -87,45 +133,16 @@ export default function ProductListScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Product List</Text>
       </View>
-      <View style={styles.filterRow}>
-        <Pressable
-          style={[
-            styles.filterChip,
-            selectedCategory === undefined && styles.filterChipActive,
-          ]}
-          onPress={() => setSelectedCategory(undefined)}
-          data-testid="product-list-filter-all"
-        >
-          <Text
-            style={[
-              styles.filterChipText,
-              selectedCategory === undefined && styles.filterChipTextActive,
-            ]}
-          >
-            All
-          </Text>
-        </Pressable>
-        {categories.map((cat) => (
-          <Pressable
-            key={cat.slug}
-            style={[
-              styles.filterChip,
-              selectedCategory === cat.slug && styles.filterChipActive,
-            ]}
-            onPress={() => setSelectedCategory(cat.slug)}
-            data-testid={`product-list-filter-${cat.slug}`}
-          >
-            <Text
-              style={[
-                styles.filterChipText,
-                selectedCategory === cat.slug && styles.filterChipTextActive,
-              ]}
-            >
-              {cat.name}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+      <FlatList
+        data={filterOptions}
+        renderItem={renderFilterChip}
+        keyExtractor={filterChipKeyExtractor}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filterChipListContent}
+        ItemSeparatorComponent={FilterChipSeparator}
+        style={styles.filterChipList}
+      />
       <FlatList
         data={products}
         renderItem={renderItem}
@@ -155,19 +172,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  filterRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 12,
-    gap: 8,
+  filterChipList: {
+    maxHeight: 48,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+  },
+  filterChipListContent: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  filterChipSeparator: {
+    width: 8,
   },
   filterChip: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     backgroundColor: '#eee',
-    borderRadius: 4,
+    borderRadius: 16,
   },
   filterChipActive: {
     backgroundColor: '#333',
