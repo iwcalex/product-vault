@@ -130,20 +130,24 @@ export default function ProductListScreen() {
 
   return (
     <ScreenContainer>
-      <View style={styles.header}>
-        <Text style={styles.title}>Product List</Text>
-        <Text style={styles.subtitle}>Browse by category</Text>
+      <View style={styles.headerChipsContainer}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Product List</Text>
+          <Text style={styles.subtitle}>Browse by category</Text>
+        </View>
+        <View style={styles.chipsWrapper}>
+          <FlatList
+            data={filterOptions}
+            renderItem={renderFilterChip}
+            keyExtractor={filterChipKeyExtractor}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterChipListContent}
+            ItemSeparatorComponent={FilterChipSeparator}
+            style={styles.filterChipList}
+          />
+        </View>
       </View>
-      <FlatList
-        data={filterOptions}
-        renderItem={renderFilterChip}
-        keyExtractor={filterChipKeyExtractor}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterChipListContent}
-        ItemSeparatorComponent={FilterChipSeparator}
-        style={styles.filterChipList}
-      />
       <FlatList
         data={products}
         renderItem={renderItem}
@@ -164,12 +168,17 @@ export default function ProductListScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingTop: 8,
-    paddingBottom: 10,
-    paddingHorizontal: 16,
+  headerChipsContainer: {
+    backgroundColor: '#fff',
+    zIndex: 1,
+    elevation: 1,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+  },
+  header: {
+    paddingTop: 8,
+    paddingBottom: 6,
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 22,
@@ -181,21 +190,24 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 2,
   },
+  chipsWrapper: {
+    minHeight: 48,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
   filterChipList: {
-    maxHeight: 40,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    flexGrow: 0,
   },
   filterChipListContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
   filterChipSeparator: {
     width: 10,
   },
   filterChip: {
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingVertical: 8,
     backgroundColor: '#f2f2f2',
     borderRadius: 20,
   },
@@ -210,7 +222,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   productListContent: {
-    paddingVertical: 8,
+    paddingTop: 4,
     paddingBottom: 24,
   },
   emptyList: {
