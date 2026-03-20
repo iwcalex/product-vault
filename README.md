@@ -75,3 +75,6 @@ yarn lint --fix
 - Development and testing are Android-focused.
 - No additional UI libraries beyond React Native core and Expo.
 - Implementation followed a step-based plan (bootstrap, navigation, API, React Query, list/detail screens, favorites + persistence, tests, cleanup).
+
+---------
+remote branch linked to the new laptop 
